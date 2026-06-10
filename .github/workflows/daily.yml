@@ -1,25 +1,30 @@
-name: Developer OS Daily Update
+name: Developer OS v2
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 4 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  update:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Update status
-        run: |
-          echo "Last update: $(date)" > status.txt
+      - name: System Snapshot
+        run: bash scripts/system_snapshot.sh
 
-      - name: Commit changes
+      - name: Update Learning Log
+        run: python3 scripts/update_learning.py
+
+      - name: Generate Dashboard
+        run: python3 scripts/generate_readme.py
+
+      - name: Commit Changes
         run: |
           git config user.name "ak47kavan"
           git config user.email "124173523+ak47kavan@users.noreply.github.com"
@@ -28,5 +33,5 @@ jobs:
 
           git diff --cached --quiet && exit 0
 
-          git commit -m "Daily Developer OS Update"
+          git commit -m "dev-os(v2): daily update"
           git push
